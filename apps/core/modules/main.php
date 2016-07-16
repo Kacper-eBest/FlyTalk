@@ -11,7 +11,7 @@ class class_core_main_page extends Command
     public function doExecute(Core $Fly)
     {
         $body = "Testowy content :)";
-        //$this->Fly->getClass('smarty')->assign('test', $body);
+        //$this->Fly->getClass('smarty')->assign('test', $body); 
 
         //$template = $this->Fly->getClass('template')->get("main", "global");
         $this->Fly->getClass('output')->setTitle("Testuje");
