@@ -2,11 +2,4 @@
 fly_config.php
 /cache/mysql_errors.txt
 /templates_c
-.idea/FlyTalk.iml
-.idea/copyright/
-.idea/dataSources.ids
-.idea/dataSources.local.xml
-.idea/deployment.xml
-.idea/misc.xml
-.idea/modules.xml
-.idea/workspace.xml
+.idea

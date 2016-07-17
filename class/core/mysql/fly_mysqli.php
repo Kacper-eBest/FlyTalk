@@ -84,6 +84,7 @@ class DB
                 $body = "Date: " . date("H:m:s j F, Y") . PHP_EOL . "Query: " . $sql . PHP_EOL . "Error: " . self::$error . PHP_EOL . PHP_EOL;
                 fwrite($mysql_error, $body);
                 fclose($mysql_error);
+                Core::getClass('output')->showError("db_error", self::$error);
                 return false;
             }
         }
@@ -124,4 +125,74 @@ class DB
         if (!self::$connection) return false;
         return mysqli_insert_id(self::$connection);
     }
+
+    static public function num($result = NULL)
+    {
+        if (!self::$connection) return false;
+        if ($result == NULL) $result = self::$last_result;
+        if ($result == null) return false;
+        return mysqli_num_rows($result);
+    }
+
+    static public function secure(string $data)
+    {
+        if (!self::$connection) return false;
+        return mysqli_escape_string(self::$connection, $data);
+    }
+
+    static public function delete(string $table, string $where = "", string $limit = "")
+    {
+        if (!self::$connection) return false;
+        $query = "";
+        if (!empty($where))
+            $query .= " WHERE $where";
+
+        if (!empty($limit))
+            $query .= " LIMIT $limit";
+
+        return self::query('DELETE FROM ' . $table . ' ' . $query);
+    }
+
+    static public function update(string $table, array $array = [], string $where = "", string $limit = "", bool $no_quote = false)
+    {
+        if (!self::$connection) return false;
+        if (!is_array($array))
+            return false;
+
+        $comma = "";
+        $query = "";
+        $quote = "'";
+
+        if ($no_quote)
+            $quote = "";
+
+        foreach ($array as $field => $value) {
+            $query .= $comma . "`" . $field . "`={$quote}{$value}{$quote}";
+            $comma = ', ';
+        }
+
+        if (!empty($where))
+            $query .= " WHERE " . $where;
+        if (!empty($limit))
+            $query .= " LIMIT " . $limit;
+
+        return self::query('UPDATE ' . $table . ' SET ' . $query);
+    }
+
+    static public function replace_query(string $table, array $replacements = array())
+    {
+        if (!self::$connection) return false;
+        $values = '';
+        $comma = '';
+        foreach ($replacements as $column => $value) {
+            $values .= $comma . "`" . $column . "`='" . $value . "'";
+            $comma = ',';
+        }
+
+        if (empty($replacements))
+            return false;
+
+        return self::query('REPLACE INTO ' . $table . ' SET ' . $values);
+    }
+
 }

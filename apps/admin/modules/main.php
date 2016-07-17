@@ -10,7 +10,11 @@ class class_admin_main_page extends Command
 {
     public function doExecute(Core $Fly)
     {
-        $body = "dupa";
+        if (!Member::getProperty("uid")) {
+            $this->Fly->getClass('output')->showError('no_permission');
+        }
+
+        $body = "testing";
         //$this->Fly->getClass('smarty')->assign('test', $body);
 
         //$template = $this->Fly->getClass('template')->get("main", "global");

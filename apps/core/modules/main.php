@@ -10,12 +10,12 @@ class class_core_main_page extends Command
 {
     public function doExecute(Core $Fly)
     {
-        $body = "Testowy content :)";
-        //$this->Fly->getClass('smarty')->assign('test', $body); 
+        $body = '<a href="index.php?app=admin">ACP</a>';
+        $this->Fly->getClass('smarty')->assign('test', $body);
 
-        //$template = $this->Fly->getClass('template')->get("main", "global");
+        $template = $this->Fly->getClass('template')->get("forum", "main");
         $this->Fly->getClass('output')->setTitle("Testuje");
-        $this->Fly->getClass('output')->addContent($body);
+        $this->Fly->getClass('output')->addContent($template);
         $this->Fly->getClass('output')->sendOutput();
     }
 }

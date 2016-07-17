@@ -21,6 +21,8 @@ class Core
     static public $settings = [];
     static public $cookies = [];
 
+    static public $bots = [];
+
     static public $ajax = false;
 
     static public $app = DEFAULT_APP;
@@ -73,14 +75,21 @@ class Core
         self::$handles['db'] = DB::instance();
         self::$handles['db']->setDB();
 
-        self::$handles['db']->query('SELECT `title`, `val` FROM ' . self::$settings['db_prefix'] . 'config');
+        self::$handles['db']->query('SELECT title, val FROM ' . self::$settings['db_prefix'] . 'config');
         while ($val = self::$handles['db']->fetch())
             self::$settings[$val['title']] = $val['val'];
+
+        self::$handles['db']->query('SELECT uid, name FROM ' . self::$settings['db_prefix'] . 'bots');
+        while ($val = self::$handles['db']->fetch())
+            self::$bots[] = $val;
 
         self::$request['request_method'] = strtolower($_SERVER['REQUEST_METHOD']) ?? "";
         self::parse_incoming($_GET);
         self::parse_incoming($_POST);
         self::parse_incoming($_REQUEST);
+
+        require(CORE_ROOT_PATH . 'class/core/fly_cookies.php');
+        Cookie::parse();
 
         if (isset(self::$request['app']) && !empty(self::$request['app']))
             self::$app = self::$request['app'];
@@ -100,14 +109,17 @@ class Core
             }
         }
 
-        $v = [];
+        self::$request['seo'] = self::$request['url'] ?? '';
         foreach ($_GET as $value => $key) {
-            $v[0] = $value;
+            self::$request['seo'] = $value;
             break;
         }
 
-        if ($v[0])
-            self::$request['seo'] = self::$request['url'] ?? $v;
+        require(CORE_ROOT_PATH . 'class/core/fly_session.php');
+        self::$handles['session'] = Session::instance();
+
+        require(CORE_ROOT_PATH . 'class/core/fly_member.php');
+        self::$handles['member'] = Member::instance();
 
         require(CORE_ROOT_PATH . 'class/smarty/Smarty.class.php');
         self::instance()->setClass('smarty', new Smarty());
@@ -117,6 +129,11 @@ class Core
 
         require(CORE_ROOT_PATH . 'class/core/fly_template.php');
         self::instance()->setClass('template', new Template(self::instance()));
+
+        self::$handles['session']->init();
+
+        if (isset(self::$request['ajax']))
+            self::$ajax = true;
 
         return true;
     }

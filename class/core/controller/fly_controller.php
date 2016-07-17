@@ -26,9 +26,9 @@ class Controller
                     $classname = 'class_' . Core::$app . '_' . Core::$module . '_page';
                     $output = new $classname();
                     $output->execute($instance->Core);
-                } else echo "1";
-            } else echo Core::$module;
-        } else echo Core::$app;
+                } else Core::getClass('output')->showError('not_found', 'class');
+            } else Core::getClass('output')->showError('not_found', Core::$module);
+        } else Core::getClass('output')->showError('not_found', Core::$app);
     }
 
     private function init()
