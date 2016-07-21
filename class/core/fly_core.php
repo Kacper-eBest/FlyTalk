@@ -132,6 +132,11 @@ class Core
 
         self::$handles['session']->init();
 
+        self::getClass('smarty')->caching = true;
+        self::getClass('smarty')->setCacheDir(CORE_ROOT_PATH . 'cache/skin_' . (Member::getProperty("template")) . '/cache/');
+        self::getClass('smarty')->setTemplateDir(CORE_ROOT_PATH . 'cache/skin_' . (Member::getProperty("template")) . '/');
+        self::getClass('smarty')->setCompileDir(CORE_ROOT_PATH . 'cache/skin_' . (Member::getProperty("template")) . '/cache/compile/');
+
         if (isset(self::$request['ajax']))
             self::$ajax = true;
 

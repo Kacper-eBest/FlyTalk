@@ -1,5 +1,5 @@
 #PHP
 fly_config.php
-/cache
+/cache/*
 /templates_c
 .idea

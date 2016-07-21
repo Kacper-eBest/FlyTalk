@@ -17,6 +17,12 @@ class Member
     ];
     static public $member_id = 0;
 
+    public function __construct()
+    {
+        // WTF PHP? Fix PHP Fatal error: Constant expression contains invalid operations
+        self::$data_store["template"] = Core::$settings['theme'];
+    }
+
     static public function instance()
     {
         if (!self::$instance) {

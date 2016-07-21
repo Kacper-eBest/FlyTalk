@@ -17,10 +17,7 @@ class class_global_global_page
         $Fly->getClass('output')->addJS("public/js/jquery.min.js");
         $Fly->getClass('output')->addJS("public/js/fly.js");
 
-        $Fly->getClass('smarty')->assign('title', $Fly->getClass('output')->makeTitle());
-        $Fly->getClass('smarty')->assign('body', $body);
-        $Fly->getClass('smarty')->assign('head', $head);
-        $template = $Fly->getClass('template')->get("global", "global");
-        $Fly->getClass('smarty')->display("string: " . $template);
+        $template = $Fly->getClass('template')->get("global", "global", ["title" => $Fly->getClass('output')->makeTitle(), "body" => $body, "head" => $head]);
+        $Fly->getClass('smarty')->display("string: " . $template['output']);
     }
 }

@@ -48,28 +48,29 @@ class Output
         return self::$title;
     }
 
-    static public function addContent(string $body, string $head = "")
+    static public function addContent(array $body, string $head = "")
     {
         if (isset(self::$Fly->fetchRequest()['ajax'])) {
             if (Core::$ajax)
-                self::$Fly->getClass('smarty')->display("string: " . $body);
+                self::$Fly->getClass('smarty')->display("string: " . $body['output']);
             else
                 self::$output = "Permission denied"; // TODO 404
         } else {
-            $body = self::$Fly->getClass('smarty')->fetch("string: " . $body);
+            $content = self::$Fly->getClass('smarty')->fetch("string: " . $body['output'], 'skin_' . $body['template'] . '|' . $body['group'] . '|' . $body['title']);
+            self::$Fly->getClass('smarty')->caching = false;
             if (file_exists(CORE_ROOT_PATH . 'apps/' . Core::$app . '/global.php')) {
                 require_once(CORE_ROOT_PATH . 'apps/' . Core::$app . '/global.php');
                 if (class_exists("class_" . Core::$app . "_global_page")) {
                     $global_class = 'class_' . Core::$app . '_global_page';
                     $text = new $global_class();
-                    self::$output = $text->doExecute(Core::instance(), $body, $head);
+                    self::$output = $text->doExecute(Core::instance(), $content, $head);
                 }
             } else if (file_exists(CORE_ROOT_PATH . 'apps/global.php')) {
                 require_once(CORE_ROOT_PATH . 'apps/global.php');
                 if (class_exists("class_global_global_page")) {
                     $global_class = 'class_global_global_page';
                     $text = new $global_class();
-                    self::$output = $text->doExecute(Core::instance(), $body, $head);
+                    self::$output = $text->doExecute(Core::instance(), $content, $head);
                 }
             }
         }
@@ -77,6 +78,7 @@ class Output
 
     static public function sendOutput()
     {
+        self::$Fly->getClass('smarty')->caching = false;
         self::$Fly->getClass('smarty')->display("string: " . self::$output);
         exit;
     }
@@ -156,5 +158,6 @@ class Output
     public static function redirect(string $url)
     {
         header("Location: " . $url);
+        exit();
     }
 }
