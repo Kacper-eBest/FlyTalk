@@ -1,6 +1,9 @@
 # FlyTalk
 _Silnik forum_
 
+`21.07.2016`
+- Cache plików szablonu
+
 `17.07.2016`
 - Obsługa błędów
 - Wstępna struktura javascript
