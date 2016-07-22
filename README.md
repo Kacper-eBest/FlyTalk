@@ -1,6 +1,11 @@
 # FlyTalk
 _Silnik forum_
 
+`22.07.2016`
+- Wstępne backendowe wsparcie dla ajaxa
+- Dynamiczne pobieranie folderu strony
+- Tymczasowe pobieranie plików szablonu z cache
+
 `21.07.2016`
 - Cache plików szablonu
 

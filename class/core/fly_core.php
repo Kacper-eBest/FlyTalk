@@ -60,6 +60,9 @@ class Core
                     self::$settings[$key] = str_replace('&#092;', '\\', $val);
         }
 
+        $pathInfo = pathinfo($_SERVER['PHP_SELF']);
+        self::$settings['board_url'] = (strtolower(substr($_SERVER["SERVER_PROTOCOL"], 0, 5)) == 'https://' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $pathInfo['dirname'] . "/";
+
         switch (self::$settings['db_type']) {
             case "mysqli":
                 require(CORE_ROOT_PATH . 'class/core/mysql/fly_mysqli.php');
@@ -131,14 +134,19 @@ class Core
         self::instance()->setClass('template', new Template(self::instance()));
 
         self::$handles['session']->init();
+        self::getClass('template')->init();
 
         self::getClass('smarty')->caching = true;
         self::getClass('smarty')->setCacheDir(CORE_ROOT_PATH . 'cache/skin_' . (Member::getProperty("template")) . '/cache/');
         self::getClass('smarty')->setTemplateDir(CORE_ROOT_PATH . 'cache/skin_' . (Member::getProperty("template")) . '/');
         self::getClass('smarty')->setCompileDir(CORE_ROOT_PATH . 'cache/skin_' . (Member::getProperty("template")) . '/cache/compile/');
 
-        if (isset(self::$request['ajax']))
-            self::$ajax = true;
+        if (isset(self::$request['ajax'])) {
+            if (self::$request['ajax'] == Session::$session_id)
+                self::$ajax = true;
+            else
+                exit();
+        }
 
         return true;
     }

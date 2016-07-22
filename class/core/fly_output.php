@@ -50,11 +50,8 @@ class Output
 
     static public function addContent(array $body, string $head = "")
     {
-        if (isset(self::$Fly->fetchRequest()['ajax'])) {
-            if (Core::$ajax)
-                self::$Fly->getClass('smarty')->display("string: " . $body['output']);
-            else
-                self::$output = "Permission denied"; // TODO 404
+        if (Core::$ajax) {
+            self::$Fly->getClass('smarty')->display("string: " . $body['output']);
         } else {
             $content = self::$Fly->getClass('smarty')->fetch("string: " . $body['output'], 'skin_' . $body['template'] . '|' . $body['group'] . '|' . $body['title']);
             self::$Fly->getClass('smarty')->caching = false;
