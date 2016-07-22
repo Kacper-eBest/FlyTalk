@@ -142,10 +142,13 @@ class Core
         self::getClass('smarty')->setCompileDir(CORE_ROOT_PATH . 'cache/skin_' . (Member::getProperty("template")) . '/cache/compile/');
 
         if (isset(self::$request['ajax'])) {
-            if (self::$request['ajax'] == Session::$session_id)
+            //if (self::$request['ajax'] == Session::$session_id)
                 self::$ajax = true;
-            else
-                exit();
+            //else {
+            // TODO FIX
+            //echo "404";
+            //exit();
+            //}
         }
 
         return true;

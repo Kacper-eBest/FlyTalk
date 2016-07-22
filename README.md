@@ -1,5 +1,9 @@
 # FlyTalk
-_Silnik forum_
+_Silnik forum - Tekst do zmiany :)_
+
+`23.07.2016`
+- Przepisanie i ulepszenie kodu javascript
+- Wstępne frontendowe wsparcie dla ajaxa
 
 `22.07.2016`
 - Wstępne backendowe wsparcie dla ajaxa
