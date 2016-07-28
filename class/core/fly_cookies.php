@@ -40,17 +40,13 @@ class Cookie
     public static function del(string $name)
     {
         self::set($name, "", -3600);
-        unset($cookies[$name]);
+        unset(self::$cookies[$name]);
     }
 
-    public static function set(string $name, string $value, $expires = "", bool $httponly = false)
+    public static function set(string $name, $value, $expires = "", bool $httponly = false)
     {
         if (Session::get_ip() == "") {
             return false;
-        }
-
-        if (!Core::$settings['cookie_path']) {
-            Core::$settings['cookie_path'] = "/";
         }
 
         if ($expires == -1) {
@@ -60,30 +56,7 @@ class Cookie
         } else {
             $expires = time() + intval($expires);
         }
-
-        Core::$settings['cookie_path'] = str_replace(array("\n", "\r"), "", Core::$settings['cookie_path']);
-        Core::$settings['cookie_domain'] = str_replace(array("\n", "\r"), "", Core::$settings['cookie_domain']);
-        Core::$settings['cookie_prefix'] = str_replace(array("\n", "\r", " "), "", Core::$settings['cookie_prefix']);
-
-        $cookie = "Set-Cookie: " . Core::$settings['cookie_prefix'] . "" . $name . "=" . urlencode($value);
-
-        if ($expires > 0) {
-            $cookie .= "; expires=" . @gmdate('D, d-M-Y H:i:s \\G\\M\\T', $expires);
-        }
-
-        if (!empty(Core::$settings['cookie_path'])) {
-            $cookie .= "; path=" . Core::$settings['cookie_path'] . "";
-        }
-
-        if (!empty(Core::$settings['cookie_domain'])) {
-            $cookie .= "; domain=" . Core::$settings['cookie_domain'] . "";
-        }
-
-        if ($httponly == true) {
-            $cookie .= "; HttpOnly";
-        }
-        header($cookie, false);
         self::$cookies[$name] = $value;
-        return true;
+        return setcookie(Core::$settings['cookie_prefix'] . $name, $value, $expires, '/', null, null, $httponly);
     }
 }
