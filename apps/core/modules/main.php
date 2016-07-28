@@ -10,7 +10,8 @@ class class_core_main_page extends Command
 {
     public function doExecute(Core $Fly)
     {
-        $body = '<a href="index.php?app=admin">ACP</a>';
+        $body = '<a href="index.php?app=admin" title="ACP">ACP</a>';
+        
         $template = $this->Fly->getClass('template')->get("forum", "main", ["test" => $body]);
         $this->Fly->getClass('output')->setTitle("Testuje");
         $this->Fly->getClass('output')->addContent($template);

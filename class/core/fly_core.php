@@ -136,19 +136,19 @@ class Core
         self::$handles['session']->init();
         self::getClass('template')->init();
 
-        self::getClass('smarty')->caching = true;
+        self::getClass('smarty')->caching = (bool)DEBUG;
         self::getClass('smarty')->setCacheDir(CORE_ROOT_PATH . 'cache/skin_' . (Member::getProperty("template")) . '/cache/');
         self::getClass('smarty')->setTemplateDir(CORE_ROOT_PATH . 'cache/skin_' . (Member::getProperty("template")) . '/');
         self::getClass('smarty')->setCompileDir(CORE_ROOT_PATH . 'cache/skin_' . (Member::getProperty("template")) . '/cache/compile/');
 
         if (isset(self::$request['ajax'])) {
-            //if (self::$request['ajax'] == Session::$session_id)
+            if (self::$request['ajax'] == Session::$session_id)
                 self::$ajax = true;
-            //else {
-            // TODO FIX
-            //echo "404";
-            //exit();
-            //}
+            else {
+                // TODO FIX
+                echo "404";
+                exit();
+            }
         }
 
         return true;

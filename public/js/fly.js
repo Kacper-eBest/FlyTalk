@@ -7,6 +7,7 @@
 
     var Fly = new function () {
         this.debug = true;
+        this.title = document.title;
 
         this.log = function (message) {
             if (this.debug)
@@ -15,15 +16,25 @@
 
         this.initialize = new function () {
             this.onReady = function () {
+                history.replaceState({title: document.title}, document.location);
+
                 Fly.log("onReady");
             };
 
             this.onLoad = function () {
                 Fly.log("onLoad");
+                this.$body = $("body");
             };
 
             this.onResize = function () {
                 Fly.log("onResize");
+            };
+
+            this.onPopState = function (event) {
+                new Fly.Redirect(document.location, {
+                    title: event.state.title ? Fly.title : fly["board_name"]
+                });
+                //redirect(event.state.title ? Fly.title : fly["board_name"], document.location, false, null);
             };
         };
         this.Request = function (url, def_options) {
@@ -31,32 +42,32 @@
                 method: 'post',
                 data: {},
                 onSuccess: Function,
-                onDone: Function,
-                beforeSend: Function
+                beforeSend: Function,
+                onAlways: Function
             };
             $.extend(this.options, def_options || {});
 
             this.request = function (url) {
-                url = url + "&ajax=" + fly["session_id"];
                 Fly.log("Request FROM: " + url);
                 var c_options = this.options;
                 $.ajax({
-                    method: c_options.method,
-                    url: url,
+                    type: c_options.method,
+                    url: url + "&ajax=" + fly["session_id"],
                     data: c_options.data,
                     beforeSend: function () {
                         // TODO loading
+
                         c_options.beforeSend.call(c_options.beforeSend);
                     },
                     success: function (data) {
+
                         c_options.onSuccess.call(c_options.onSuccess, data);
                     }
-                }).done(function (data) {
-                    c_options.onDone.call(c_options.onDone, data);
                 }).always(function () {
                     // TODO end loading
-                });
 
+                    c_options.onAlways.call(c_options.onAlways);
+                });
             };
             this.request(url);
         };
@@ -65,18 +76,75 @@
             this.options = {
                 method: 'post',
                 title: '',
-                data: {}
+                object: null,
+                inside: false,
+                data: {},
+                onSuccess: Function,
+                beforeSend: Function,
+                onAlways: Function
             };
             $.extend(this.options, def_options || {});
             this.request = function (url) {
-                url = url + "&ajax=" + fly["session_id"];
-                Fly.log("redirect to: " + url);
+                var c_options = this.options;
+                var $inside = c_options.inside ? $("#main_page_inside") : $("#main_page");
+
+                var temp_title = "";
+                var temp_url = "";
+                if (c_options.object != null) {
+                    if (c_options.object.attr("ref") == "index")
+                        temp_url = fly["board_url"];
+
+                    if (c_options.title && c_options.title != fly["board_name"])
+                        temp_title = c_options.title + " - " + fly["board_name"];
+                    else
+                        temp_title = fly["board_name"];
+
+                    history.pushState({
+                        title: temp_title,
+                        inside: c_options.inside
+                    }, temp_title, temp_url ? temp_url : url);
+                }
+                else temp_title = c_options.title;
+                Fly.title = temp_title;
+                document.title = Fly.title;
+
+                $.ajax({
+                    type: c_options.method,
+                    url: url + "&ajax=" + fly["session_id"],
+                    data: c_options.data,
+                    beforeSend: function () {
+                        var $loadingBar = $("#loadingbar");
+                        if ($loadingBar.length === 0) {
+                            $("body").append("<div id='loadingbar'></div>");
+                            $loadingBar.addClass("waiting").append($("<dt/><dd/>"));
+                            $loadingBar.width((50 + Math.random() * 30) + "%");
+                        }
+
+                        c_options.beforeSend.call(c_options.beforeSend);
+                    },
+                    success: function (data) {
+                        $inside.fadeOut(200, function () {
+                            $inside.html(data);
+                            $inside.fadeIn(200, function () {
+                                $("body").animate({scrollTop: 0}, 1);
+                            });
+                        });
+
+                        c_options.onSuccess.call(c_options.onSuccess, data);
+                    }
+                }).always(function () {
+                    $("#loadingbar").width("101%").delay(200).fadeOut(400, function () {
+                        $(this).remove();
+                    });
+
+                    c_options.onAlways.call(c_options.onAlways);
+                });
             };
             this.request(url);
         };
 
         this.Tools = new function () {
-            this.Redirect = function (url) {
+            this.normalRedirect = function (url) {
                 var ua = navigator.userAgent.toLowerCase(),
                     isIE = ua.indexOf('msie') !== -1,
                     version = parseInt(ua.substr(4, 2), 10);
@@ -134,17 +202,32 @@
     $(document).ready(Fly.initialize.onReady());
     $(window).load(Fly.initialize.onLoad());
     $(window).on('resize', Fly.initialize.onResize());
+    $(window).on('popstate', function (event) {
+        Fly.initialize.onPopState(event)
+    });
+
     $(document).delegate("a", "click", function (event) {
+        var $this = $(this);
+        var temp_title = $this.attr("title");
+        if ($this.attr("fix-title"))
+            temp_title = $(this).attr("fix-title");
+        if ($this.attr("original-title"))
+            temp_title = $(this).attr("original-title");
+
+        Fly.Redirect($(this).attr("href"), {
+            title: temp_title,
+            object: $this,
+            data: $this.attr("data"),
+            onSuccess: function (data) {
+
+            }
+        });
         event.preventDefault();
-        Fly.Redirect($(this).attr("href"), {});
     });
 
     new Fly.Request(fly['board_url'] + "index.php?app=core&module=ajax_test", {
         onSuccess: function (data) {
 
-        },
-        onDone: function (data) {
-            console.log(data);
         }
     });
 

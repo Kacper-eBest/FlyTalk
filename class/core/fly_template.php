@@ -48,7 +48,7 @@ class Template
             fclose($file);
         }
         if (count($variables)) {
-            if (!self::$Fly->getClass('smarty')->isCached("string: " . $output, 'skin_' . self::$template_id . '|' . $group . '|' . $title))
+            //if (!self::$Fly->getClass('smarty')->isCached("string: " . $output, 'skin_' . self::$template_id . '|' . $group . '|' . $title))
                 foreach ($variables as $name => $value) {
                     self::$Fly->getClass('smarty')->assign($name, $value);
                 }
