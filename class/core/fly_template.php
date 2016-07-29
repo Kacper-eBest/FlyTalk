@@ -33,8 +33,16 @@ class Template
         $filename = CORE_ROOT_PATH . 'cache/skin_' . self::$template_id . '/' . $group . '/' . $title . '.php';
         if (file_exists($filename)) {
             $output = file_get_contents($filename);
-            if (DEBUG)
-                $output = "<!-- Cached $group/$title, generated -->\n" . $output;
+            if (DEBUG) {
+                $temp_output = Core::DB()->secure($output);
+                Core::DB()->query('SELECT `uid` FROM `' . Core::$settings['db_prefix'] . 'set` WHERE `theme` = ' . self::$template_id . ' AND `group` = "' . $group . '" AND `name` = "' . $title . '"');
+                if (!Core::DB()->num()) {
+                    Core::DB()->query('INSERT INTO `' . Core::$settings['db_prefix'] . 'set` (theme, group, name, value) VALUES (' . self::$template_id . ', "' . $group . '", "' . $title . '", "' . $temp_output . '")');
+                } else {
+                    Core::DB()->update('`' . Core::$settings['db_prefix'] . 'set`', ["value" => $temp_output], '`theme` = ' . self::$template_id . ' AND `group` = "' . $group . '" AND `name` = "' . $title . '"');
+                }
+                $output = "<!-- From file $group/$title, generated -->\n" . $output;
+            }
         } else {
             if (!DEBUG) {
                 Core::DB()->query('SELECT `value` FROM `' . Core::$settings['db_prefix'] . 'set` WHERE `theme` = ' . self::$template_id . ' AND `group` = "' . $group . '" AND `name` = "' . $title . '"');

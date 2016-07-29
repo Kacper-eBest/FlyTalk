@@ -23,7 +23,6 @@
 
             this.onLoad = function () {
                 Fly.log("onLoad");
-                this.$body = $("body");
             };
 
             this.onResize = function () {
@@ -86,27 +85,19 @@
             $.extend(this.options, def_options || {});
             this.request = function (url) {
                 var c_options = this.options;
-                var $inside = c_options.inside ? $("#main_page_inside") : $("#main_page");
+                var $inside = !c_options.inside ? $("#main_page") : $("#main_page_inside");
 
-                var temp_title = "";
                 var temp_url = "";
                 if (c_options.object != null) {
                     if (c_options.object.attr("ref") == "index")
                         temp_url = fly["board_url"];
 
-                    if (c_options.title && c_options.title != fly["board_name"])
-                        temp_title = c_options.title + " - " + fly["board_name"];
-                    else
-                        temp_title = fly["board_name"];
-
-                    history.pushState({
-                        title: temp_title,
-                        inside: c_options.inside
-                    }, temp_title, temp_url ? temp_url : url);
+                    if (c_options.object.attr("rel") == "popup")
+                        return false;
                 }
-                else temp_title = c_options.title;
-                Fly.title = temp_title;
-                document.title = Fly.title;
+
+                if (typeof($.colorbox) != "undefined")
+                    $.colorbox.close();
 
                 $.ajax({
                     type: c_options.method,
@@ -123,10 +114,29 @@
                         c_options.beforeSend.call(c_options.beforeSend);
                     },
                     success: function (data) {
+                        var json = $.parseJSON(data);
+
+                        var temp_title = "";
+                        if (c_options.object != null) {
+                            if (c_options.title && c_options.title != fly["board_name"])
+                                temp_title = c_options.title + " - " + fly["board_name"];
+                            else if (json.title && json.title != fly["board_name"])
+                                temp_title = json.title + " - " + fly["board_name"];
+                            else
+                                temp_title = fly["board_name"];
+
+                            history.pushState({
+                                title: temp_title,
+                                inside: c_options.inside
+                            }, temp_title, temp_url ? temp_url : url);
+                        }
+                        else temp_title = c_options.title;
+                        document.title = Fly.title = temp_title;
+
                         $inside.fadeOut(200, function () {
-                            $inside.html(data);
+                            $inside.html(json.output);
                             $inside.fadeIn(200, function () {
-                                $("body").animate({scrollTop: 0}, 1);
+                                $("body").stop().animate({scrollTop: 0}, 1);
                             });
                         });
 
@@ -194,7 +204,7 @@
             };
 
             this.delete = function (cname) {
-                this.set(cname, "", -3600);
+                Fly.Cookie.set(cname, "", -3600);
             };
         };
     };
@@ -210,11 +220,11 @@
         var $this = $(this);
         var temp_title = $this.attr("title");
         if ($this.attr("fix-title"))
-            temp_title = $(this).attr("fix-title");
+            temp_title = $this.attr("fix-title");
         if ($this.attr("original-title"))
-            temp_title = $(this).attr("original-title");
+            temp_title = $this.attr("original-title");
 
-        Fly.Redirect($(this).attr("href"), {
+        Fly.Redirect($this.attr("href"), {
             title: temp_title,
             object: $this,
             data: $this.attr("data"),

@@ -44,14 +44,16 @@ class Output
 
     public static function getTitle(): string
     {
-        if (empty(self::$title)) return self::$Fly->$settings['sitename'];
+        if (empty(self::$title)) return Core::$settings['sitename'];
         return self::$title;
     }
 
     static public function addContent(array $body, string $head = "")
     {
         if (Core::$ajax) {
-            self::$Fly->getClass('smarty')->display("string: " . $body['output']);
+            $temp_output = self::$Fly->getClass('smarty')->fetch("string: " . $body['output']);
+            echo json_encode(["output" => $temp_output, "title" => self::getTitle()]);
+            exit();
         } else {
             $content = self::$Fly->getClass('smarty')->fetch("string: " . $body['output'], 'skin_' . $body['template'] . '|' . $body['group'] . '|' . $body['title']);
             self::$Fly->getClass('smarty')->caching = false;

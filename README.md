@@ -1,6 +1,10 @@
 # FlyTalk
 _Silnik forum - Tekst do zmiany :)_
 
+`29.07.2016`
+- Pobieranie tytułu strony bezpośrednio ze źródła
+- Debugowa aktualizacja w bazie danych templatek z pliku
+
 `28.07.2016`
 - Rozwinięte frontendowe wsparcie dla ajaxa
 - Wyłączenie cache dla debug mode
