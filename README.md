@@ -1,6 +1,11 @@
 # FlyTalk
 _Silnik forum - Tekst do zmiany :)_
 
+`30.07.2016`
+- Aktualizacja minify
+- Automatyczne wczytywanie plików CSS z folderu
+- Automatyczne minify plików CSS i JS
+
 `29.07.2016`
 - Pobieranie tytułu strony bezpośrednio ze źródła
 - Debugowa aktualizacja w bazie danych templatek z pliku
