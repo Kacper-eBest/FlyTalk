@@ -20,6 +20,7 @@ class class_global_global_page
             closedir($handle);
         }
         $Fly->getClass('output')->addJS("/public/js/jquery.min.js");
+        $Fly->getClass('output')->addJS("/public/js/date.format.js");
         $Fly->getClass('output')->addJS("/public/js/fly.js");
 
         $template = $Fly->getClass('template')->get("global", "global", ["title" => $Fly->getClass('output')->makeTitle(), "body" => $body, "head" => $head]);

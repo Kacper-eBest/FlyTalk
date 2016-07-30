@@ -1,6 +1,14 @@
 # FlyTalk
 _Silnik forum - Tekst do zmiany :)_
 
+`31.07.2016`
+- `x minut/sekund/godzin temu` w JS
+- Obsługa cofania strony
+- Dodanie wyjątku dla braku pliku konfiguracyjnego
+- Zmienne `theme_url` i `image_url`
+- Domyślny loading dla `Fly.Request`
+- Obsługa `onBlur` i `onFocus`
+
 `30.07.2016`
 - Aktualizacja minify
 - Automatyczne wczytywanie plików CSS z folderu

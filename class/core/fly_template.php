@@ -11,7 +11,7 @@ class Template
     private static $Fly;
 
     public static $template_id;
-    public static $template_name = "";
+    public static $template_data = [];
 
     public function __construct(Core $Fly)
     {
@@ -21,6 +21,9 @@ class Template
     public function init()
     {
         self::$template_id = Member::getProperty("template");
+
+        Core::DB()->query('SELECT * FROM `' . Core::$settings['db_prefix'] . 'themes` WHERE `uid` = ' . self::$template_id);
+        self::$template_data = Core::DB()->fetch();
     }
 
     public static function get(string $group, string $title, $variables = []):array

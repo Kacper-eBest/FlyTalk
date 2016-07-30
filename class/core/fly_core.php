@@ -53,7 +53,9 @@ class Core
         }
         self::$initiated = true;
 
-        if (is_file(CORE_ROOT_PATH . 'fly_config.php')) {
+        if (!is_file(CORE_ROOT_PATH . 'fly_config.php')) {
+            throw new Exception('fly_config.php not found!');
+        } else {
             require(CORE_ROOT_PATH . 'fly_config.php');
             if (is_array($config))
                 foreach ($config as $key => $val)
@@ -65,13 +67,13 @@ class Core
 
         switch (self::$settings['db_type']) {
             case "mysqli":
-                require(CORE_ROOT_PATH . 'class/core/mysql/fly_mysqli.php');
+                require(CORE_ROOT_PATH . 'class/core/db/fly_mysqli.php');
                 break;
             case "mysql":
-                require(CORE_ROOT_PATH . 'class/core/mysql/fly_mysql.php');
+                require(CORE_ROOT_PATH . 'class/core/db/fly_mysql.php');
                 break;
             case "postgre":
-                require(CORE_ROOT_PATH . 'class/core/mysql/fly_postgre.php');
+                require(CORE_ROOT_PATH . 'class/core/db/fly_postgre.php');
                 break;
         }
 
@@ -136,17 +138,23 @@ class Core
         self::$handles['session']->init();
         self::getClass('template')->init();
 
-        self::getClass('smarty')->caching = (bool)DEBUG;
+        self::$settings['theme_url'] = self::$settings['board_url'] . '/public/' . Template::$template_data['public_url'];
+        self::$settings['img_url'] = self::$settings['theme_url'] . '/images';
+
+        self::getClass('smarty')->caching = (bool)!DEBUG;
+        self::getClass('smarty')->addPluginsDir(CORE_ROOT_PATH . 'class/core/smarty');
         self::getClass('smarty')->setCacheDir(CORE_ROOT_PATH . 'cache/skin_' . (Member::getProperty("template")) . '/cache/');
         self::getClass('smarty')->setTemplateDir(CORE_ROOT_PATH . 'cache/skin_' . (Member::getProperty("template")) . '/');
         self::getClass('smarty')->setCompileDir(CORE_ROOT_PATH . 'cache/skin_' . (Member::getProperty("template")) . '/cache/compile/');
+
+//        if(DEBUG) {
+//            self::getClass('smarty')->clearAllCache();
+//        }
 
         if (isset(self::$request['ajax'])) {
             if (self::$request['ajax'] == Session::$session_id)
                 self::$ajax = true;
             else {
-                // TODO FIX
-                echo "404";
                 exit();
             }
         }

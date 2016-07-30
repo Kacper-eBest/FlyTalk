@@ -39,8 +39,7 @@ class DB
         if (self::$connection) {
             return self::$connection;
         } else {
-            self::$error = mysqli_error(self::$connection);
-            return false;
+            throw new Exception(self::$error);
         }
     }
 
