@@ -1,7 +1,7 @@
 <?php
 /**
  * AJAX checks for zlib.output_compression
- *
+ * 
  * @package Minify
  */
 
@@ -11,7 +11,7 @@ $_oc = ini_get('zlib.output_compression');
 require dirname(__FILE__) . '/../config.php';
 if (!$min_enableBuilder) {
     header('Location: /');
-    exit();
+    exit;
 }
 
 if (isset($_GET['hello'])) {

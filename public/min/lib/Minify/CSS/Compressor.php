@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Minify_CSS_Compressor
+ * Class Minify_CSS_Compressor 
  * @package Minify
  */
 
@@ -9,11 +9,11 @@
  *
  * This is a heavy regex-based removal of whitespace, unnecessary
  * comments and tokens, and some CSS value minimization, where practical.
- * Many steps have been taken to avoid breaking comment-based hacks,
+ * Many steps have been taken to avoid breaking comment-based hacks, 
  * including the ie5/mac filter (and its inversion), but expect tricky
  * hacks involving comment tokens in 'content' value strings to break
  * minimization badly. A test suite is available.
- *
+ * 
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  * @author http://code.google.com/u/1stvamp/ (Issue 64 patch)
@@ -23,11 +23,11 @@ class Minify_CSS_Compressor
 
     /**
      * Minify a CSS string
-     *
+     * 
      * @param string $css
-     *
+     * 
      * @param array $options (currently ignored)
-     *
+     * 
      * @return string
      */
     public static function process($css, $options = array())
@@ -51,7 +51,7 @@ class Minify_CSS_Compressor
 
     /**
      * Constructor
-     *
+     * 
      * @param array $options (currently ignored)
      */
     private function __construct($options)
@@ -61,9 +61,9 @@ class Minify_CSS_Compressor
 
     /**
      * Minify a CSS string
-     *
+     * 
      * @param string $css
-     *
+     * 
      * @return string
      */
     protected function _process($css)
@@ -124,7 +124,7 @@ class Minify_CSS_Compressor
                 {                # open declaration block
             /x'
             , array($this, '_selectorsCB'), $css);
-
+        
         // minimize hex colors
         $css = preg_replace('/([^=])#([a-f\\d])\\2([a-f\\d])\\3([a-f\\d])\\4([\\s;\\}])/i'
             , '$1#$2$3$4$5', $css);
@@ -132,7 +132,7 @@ class Minify_CSS_Compressor
         // remove spaces between font families
         $css = preg_replace_callback('/font-family:([^;}]+)([;}])/'
             , array($this, '_fontFamilyCB'), $css);
-
+        
         $css = preg_replace('/@import\\s+url/', '@import url', $css);
 
         // replace any ws involving newlines with a single newline
@@ -147,7 +147,7 @@ class Minify_CSS_Compressor
             \\s+
             /x'
             , "$1\n", $css);
-
+        
         // prevent triggering IE6 bug: http://www.crankygeek.com/ie6pebug/
         $css = preg_replace('/:first-l(etter|ine)\\{/', ':first-l$1 {', $css);
 
@@ -155,10 +155,10 @@ class Minify_CSS_Compressor
     }
 
     /**
-     * Replace what looks like a set of selectors
+     * Replace what looks like a set of selectors  
      *
      * @param array $m regex matches
-     *
+     * 
      * @return string
      */
     protected function _selectorsCB($m)
@@ -169,15 +169,15 @@ class Minify_CSS_Compressor
 
     /**
      * Process a comment and return a replacement
-     *
+     * 
      * @param array $m regex matches
-     *
+     * 
      * @return string
      */
     protected function _commentCB($m)
     {
         $hasSurroundingWs = (trim($m[0]) !== $m[1]);
-        $m = $m[1];
+        $m = $m[1]; 
         // $m is the comment content w/o the surrounding tokens, 
         // but the return value will replace the entire comment.
         if ($m === 'keep') {
@@ -229,10 +229,10 @@ class Minify_CSS_Compressor
 
     /**
      * Process a font-family listing and return a replacement
-     *
+     * 
      * @param array $m regex matches
      *
-     * @return string
+     * @return string   
      */
     protected function _fontFamilyCB($m)
     {

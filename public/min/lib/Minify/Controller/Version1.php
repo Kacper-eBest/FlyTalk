@@ -1,33 +1,36 @@
 <?php
 /**
- * Class Minify_Controller_Version1
+ * Class Minify_Controller_Version1  
  * @package Minify
  */
 
-require_once 'Minify/Controller/Base.php';
-
 /**
  * Controller class for emulating version 1 of minify.php (mostly a proof-of-concept)
- *
+ * 
  * <code>
  * Minify::serve('Version1');
  * </code>
- *
+ * 
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
 class Minify_Controller_Version1 extends Minify_Controller_Base
 {
-
+    
     /**
      * Set up groups of files as sources
-     *
+     * 
      * @param array $options controller and Minify options
      * @return array Minify options
-     *
+     * 
      */
     public function setupSources($options)
     {
+        // PHP insecure by default: realpath() and other FS functions can't handle null bytes.
+        if (isset($_GET['files'])) {
+            $_GET['files'] = str_replace("\x00", '', (string)$_GET['files']);
+        }
+
         self::_setupDefines();
         if (MINIFY_USE_CACHE) {
             $cacheDir = defined('MINIFY_CACHE_DIR')
@@ -53,7 +56,6 @@ class Minify_Controller_Version1 extends Minify_Controller_Base
         ) {
             return $options;
         }
-        $extension = $m[1];
 
         $files = explode(',', $_GET['files']);
         if (count($files) > MINIFY_MAX_FILES) {
@@ -65,7 +67,6 @@ class Minify_Controller_Version1 extends Minify_Controller_Base
             . DIRECTORY_SEPARATOR;
         $prependAbsPaths = $_SERVER['DOCUMENT_ROOT'];
 
-        $sources = array();
         $goodFiles = array();
         $hasBadSource = false;
 

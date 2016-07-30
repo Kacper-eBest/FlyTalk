@@ -1,40 +1,40 @@
 <?php
 /**
- * Class Minify_Controller_Base
+ * Class Minify_Controller_Base  
  * @package Minify
  */
 
 /**
  * Base class for Minify controller
- *
+ * 
  * The controller class validates a request and uses it to create sources
  * for minification and set options like contentType. It's also responsible
  * for loading minifier code upon request.
- *
+ * 
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
 abstract class Minify_Controller_Base
 {
-
+    
     /**
      * Setup controller sources and set an needed options for Minify::source
      *
      * You must override this method in your subclass controller to set
      * $this->sources. If the request is NOT valid, make sure $this->sources
-     * is left an empty array. Then strip any controller-specific options from
+     * is left an empty array. Then strip any controller-specific options from 
      * $options and return it. To serve files, $this->sources must be an array of
      * Minify_Source objects.
-     *
+     * 
      * @param array $options controller and Minify options
-     *
+     * 
      * @return array $options Minify::serve options
      */
     abstract public function setupSources($options);
 
     /**
      * Get default Minify options for this controller.
-     *
+     * 
      * Override in subclass to change defaults
      *
      * @return array options for Minify
@@ -53,22 +53,23 @@ abstract class Minify_Controller_Base
         , 'bubbleCssImports' => false
         , 'quiet' => false // serve() will send headers and output
         , 'debug' => false
-
+        , 'concatOnly' => false
+            
             // if you override these, the response codes MUST be directly after
             // the first space.
         , 'badRequestHeader' => 'HTTP/1.0 400 Bad Request'
         , 'errorHeader' => 'HTTP/1.0 500 Internal Server Error'
-
+            
             // callback function to see/modify content of all sources
         , 'postprocessor' => null
             // file to require to load preprocessor
         , 'postprocessorRequire' => null
         );
-    }
+    }  
 
     /**
      * Get default minifiers for this controller.
-     *
+     * 
      * Override in subclass to change defaults
      *
      * @return array minifier callbacks for common types
@@ -82,45 +83,17 @@ abstract class Minify_Controller_Base
     }
 
     /**
-     * Load any code necessary to execute the given minifier callback.
-     *
-     * The controller is responsible for loading minification code on demand
-     * via this method. This built-in function will only load classes for
-     * static method callbacks where the class isn't already defined. It uses
-     * the PEAR convention, so, given array('Jimmy_Minifier', 'minCss'), this
-     * function will include 'Jimmy/Minifier.php'.
-     *
-     * If you need code loaded on demand and this doesn't suit you, you'll need
-     * to override this function in your subclass.
-     * @see Minify_Controller_Page::loadMinifier()
-     *
-     * @param callback $minifierCallback callback of minifier function
-     *
-     * @return null
-     */
-    public function loadMinifier($minifierCallback)
-    {
-        if (is_array($minifierCallback)
-            && is_string($minifierCallback[0])
-            && !class_exists($minifierCallback[0], false)
-        ) {
-
-            require str_replace('_', '/', $minifierCallback[0]) . '.php';
-        }
-    }
-
-    /**
      * Is a user-given file within an allowable directory, existing,
      * and having an extension js/css/html/txt ?
-     *
+     * 
      * This is a convenience function for controllers that have to accept
      * user-given paths
      *
      * @param string $file full file path (already processed by realpath())
-     *
+     * 
      * @param array $safeDirs directories where files are safe to serve. Files can also
      * be in subdirectories of these directories.
-     *
+     * 
      * @return bool file is safe
      *
      * @deprecated use checkAllowDirs, checkNotHidden instead
@@ -176,9 +149,7 @@ abstract class Minify_Controller_Base
     /**
      * instances of Minify_Source, which provide content and any individual minification needs.
      *
-     * @var array
-     *
-     * @see Minify_Source
+     * @var Minify_Source[]
      */
     public $sources = array();
 
@@ -188,16 +159,16 @@ abstract class Minify_Controller_Base
      * The setupSources() method may choose to set this, making it easier to
      * recognize a particular set of sources/settings in the cache folder. It
      * will be filtered and truncated to make the final cache id <= 250 bytes.
-     *
+     * 
      * @var string
      */
     public $selectionId = '';
 
     /**
      * Mix in default controller options with user-given options
-     *
+     * 
      * @param array $options user options
-     *
+     * 
      * @return array mixed options
      */
     public final function mixInDefaultOptions($options)
@@ -215,14 +186,14 @@ abstract class Minify_Controller_Base
     }
 
     /**
-     * Analyze sources (if there are any) and set $options 'contentType'
+     * Analyze sources (if there are any) and set $options 'contentType' 
      * and 'lastModifiedTime' if they already aren't.
-     *
+     * 
      * @param array $options options for Minify
-     *
+     * 
      * @return array options for Minify
      */
-    public final function analyzeSources($options = array())
+    public final function analyzeSources($options = array()) 
     {
         if ($this->sources) {
             if (!isset($options['contentType'])) {
@@ -235,7 +206,7 @@ abstract class Minify_Controller_Base
                     $max = max($source->lastModified, $max);
                 }
                 $options['lastModifiedTime'] = $max;
-            }
+            }    
         }
         return $options;
     }
@@ -249,7 +220,6 @@ abstract class Minify_Controller_Base
      */
     public function log($msg)
     {
-        require_once 'Minify/Logger.php';
         Minify_Logger::log($msg);
     }
 }

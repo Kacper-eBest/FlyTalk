@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 if (phpversion() < 5) {
     exit('Minify requires PHP5 or greater.');
@@ -24,26 +24,20 @@ if (0 === strpos($_SERVER["SERVER_SOFTWARE"], 'Apache/')
 
 require dirname(__FILE__) . '/../config.php';
 
+require "$min_libPath/Minify/Loader.php";
+Minify_Loader::register();
+
 if (!$min_enableBuilder) {
-    header('Location: /');
-    exit();
+    header('Content-Type: text/plain');
+    die('This application is not enabled. See http://code.google.com/p/minify/wiki/BuilderApp');
 }
 
-$setIncludeSuccess = set_include_path(dirname(__FILE__) . '/../lib' . PATH_SEPARATOR . get_include_path());
-// we do it this way because we want the builder to work after the user corrects
-// include_path. (set_include_path returning FALSE is OK).
-try {
-    require_once 'Minify/Cache/File.php';
-} catch (Exception $e) {
-    if (!$setIncludeSuccess) {
-        echo "Minify: set_include_path() failed. You may need to set your include_path "
-            . "outside of PHP code, e.g., in php.ini.";
-    } else {
-        echo $e->getMessage();
-    }
-    exit();
+if (isset($min_builderPassword)
+    && is_string($min_builderPassword)
+    && $min_builderPassword !== ''
+) {
+    DooDigestAuth::http_auth('Minify Builder', array('admin' => $min_builderPassword));
 }
-require 'Minify.php';
 
 $cachePathCode = '';
 if (!isset($min_cachePath) && !function_exists('sys_get_temp_dir')) {
@@ -56,6 +50,7 @@ ob_start();
     <!DOCTYPE html>
     <title>Minify URI Builder</title>
     <meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <style>
         body {
             margin: 1em 60px;
@@ -182,7 +177,7 @@ ob_start();
         <div id=bmUris></div>
 
         <p>
-            <button id=update class=hide>Update</button>
+            <button class="btn btn-primary" id=update class=hide>Update</button>
         </p>
 
         <div id=results class=hide>
@@ -295,7 +290,7 @@ ob_start();
                                 + 'successfully disabled via ini_set(). If you experience mangled output you '
                                 + 'may want to consider disabling this option in your PHP configuration.<\/p>'
                             );
-                    });
+            });
                 });
             });
         })();

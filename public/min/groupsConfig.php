@@ -4,17 +4,14 @@
  * @package Minify
  */
 
-/**
+/** 
  * You may wish to use the Minify URI Builder app to suggest
  * changes. http://yourdomain/min/builder/
- */
-
-$min_serveOptions['encodeOutput'] = 1;
+ *
+ * See http://code.google.com/p/minify/wiki/CustomSource for other ideas
+ **/
 
 return array(
-    'js' => array(
-        $min_documentRoot . '/public/js/3rd_party/prototype.js',
-        $min_documentRoot . '/public/js/3rd_party/scriptaculous/scriptaculous-cache.js',
-    ),
+    // 'js' => array('//js/file1.js', '//js/file2.js'),
     // 'css' => array('//css/file1.css', '//css/file2.css'),
 );

@@ -1,22 +1,22 @@
 <?php
 /**
- * Class Minify_Logger
+ * Class Minify_Logger  
  * @package Minify
  */
 
-/**
+/** 
  * Message logging class
- *
+ * 
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  *
- * @todo lose this singleton! pass log object in Minify::serve and distribute to others
+ * @deprecated 2.3 This will be removed in Minify 3.0
  */
 class Minify_Logger
 {
 
     /**
-     * Set logger object.
+     * Set logger object. 
      *
      * The object should have a method "log" that accepts a value as 1st argument and
      * an optional string label as the 2nd.

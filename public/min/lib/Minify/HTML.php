@@ -18,6 +18,10 @@
  */
 class Minify_HTML
 {
+    /**
+     * @var boolean
+     */
+    protected $_jsCleanComments = true;
 
     /**
      * "Minify" an HTML page
@@ -39,7 +43,7 @@ class Minify_HTML
      */
     public static function minify($html, $options = array())
     {
-        $min = new Minify_HTML($html, $options);
+        $min = new self($html, $options);
         return $min->process();
     }
 
@@ -57,10 +61,10 @@ class Minify_HTML
      * 'jsMinifier' : (optional) callback function to process content of SCRIPT
      * elements. Note: the type attribute is ignored.
      *
+     * 'jsCleanComments' : (optional) whether to remove HTML comments beginning and end of script block
+     *
      * 'xhtml' : (optional boolean) should content be treated as XHTML1.0? If
      * unset, minify will sniff for an XHTML doctype.
-     *
-     * @return null
      */
     public function __construct($html, $options = array())
     {
@@ -74,12 +78,15 @@ class Minify_HTML
         if (isset($options['jsMinifier'])) {
             $this->_jsMinifier = $options['jsMinifier'];
         }
+        if (isset($options['jsCleanComments'])) {
+            $this->_jsCleanComments = (bool)$options['jsCleanComments'];
+        }
     }
 
 
     /**
      * Minify the markeup given in the constructor
-     *
+     * 
      * @return string
      */
     public function process()
@@ -96,47 +103,47 @@ class Minify_HTML
             '/(\\s*)<script(\\b[^>]*?>)([\\s\\S]*?)<\\/script>(\\s*)/i'
             , array($this, '_removeScriptCB')
             , $this->_html);
-
+        
         // replace STYLEs (and minify) with placeholders
         $this->_html = preg_replace_callback(
             '/\\s*<style(\\b[^>]*>)([\\s\\S]*?)<\\/style>\\s*/i'
             , array($this, '_removeStyleCB')
             , $this->_html);
-
+        
         // remove HTML comments (not containing IE conditional comments).
         $this->_html = preg_replace_callback(
             '/<!--([\\s\\S]*?)-->/'
             , array($this, '_commentCB')
             , $this->_html);
-
+        
         // replace PREs with placeholders
         $this->_html = preg_replace_callback('/\\s*<pre(\\b[^>]*?>[\\s\\S]*?<\\/pre>)\\s*/i'
             , array($this, '_removePreCB')
             , $this->_html);
-
+        
         // replace TEXTAREAs with placeholders
         $this->_html = preg_replace_callback(
             '/\\s*<textarea(\\b[^>]*?>[\\s\\S]*?<\\/textarea>)\\s*/i'
             , array($this, '_removeTextareaCB')
             , $this->_html);
-
+        
         // trim each line.
         // @todo take into account attribute values that span multiple lines.
         $this->_html = preg_replace('/^\\s+|\\s+$/m', '', $this->_html);
 
         // remove ws around block/undisplayed elements
         $this->_html = preg_replace('/\\s+(<\\/?(?:area|base(?:font)?|blockquote|body'
-            . '|caption|center|cite|col(?:group)?|dd|dir|div|dl|dt|fieldset|form'
+            . '|caption|center|col(?:group)?|dd|dir|div|dl|dt|fieldset|form'
             . '|frame(?:set)?|h[1-6]|head|hr|html|legend|li|link|map|menu|meta'
             . '|ol|opt(?:group|ion)|p|param|t(?:able|body|head|d|h||r|foot|itle)'
             . '|ul)\\b[^>]*>)/i', '$1', $this->_html);
-
+        
         // remove ws outside of all elements
         $this->_html = preg_replace(
             '/>(\\s(?:\\s*))?([^<]+)(\\s(?:\s*))?</'
             , '>$1$2$3<'
             , $this->_html);
-
+        
         // use newlines before 1st attribute in open tags (to limit line lengths)
         $this->_html = preg_replace('/(<[a-z\\-]+)\\s+([^>]+>)/i', "$1\n$2", $this->_html);
 
@@ -217,7 +224,9 @@ class Minify_HTML
         $ws2 = ($m[4] === '') ? '' : ' ';
 
         // remove HTML comments (and ending "//" if present)
-        $js = preg_replace('/(?:^\\s*<!--\\s*|\\s*(?:\\/\\/)?\\s*-->\\s*$)/', '', $js);
+        if ($this->_jsCleanComments) {
+            $js = preg_replace('/(?:^\\s*<!--\\s*|\\s*(?:\\/\\/)?\\s*-->\\s*$)/', '', $js);
+        }
 
         // remove CDATA section markers
         $js = $this->_removeCdata($js);

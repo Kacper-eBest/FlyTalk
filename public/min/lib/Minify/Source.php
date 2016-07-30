@@ -1,15 +1,15 @@
 <?php
 /**
- * Class Minify_Source
+ * Class Minify_Source  
  * @package Minify
  */
 
 /**
  * A content source to be minified by Minify.
- *
+ * 
  * This allows per-source minification options and the mixing of files with
  * content from other sources.
- *
+ * 
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
@@ -43,12 +43,12 @@ class Minify_Source
 
     /**
      * Create a Minify_Source
-     *
+     * 
      * In the $spec array(), you can either provide a 'filepath' to an existing
      * file (existence will not be checked!) or give 'id' (unique string for
-     * the content), 'content' (the string content) and 'lastModified'
+     * the content), 'content' (the string content) and 'lastModified' 
      * (unixtime of last update).
-     *
+     * 
      * As a shortcut, the controller will replace "//" at the beginning
      * of a filepath with $_SERVER['DOCUMENT_ROOT'] . '/'.
      *
@@ -134,7 +134,7 @@ class Minify_Source
      * Verifies a single minification call can handle all sources
      *
      * @param array $sources Minify_Source instances
-     *
+     * 
      * @return bool true iff there no sources with specific minifier preferences.
      */
     public static function haveNoMinifyPrefs($sources)
@@ -153,7 +153,7 @@ class Minify_Source
      * Get unique string for a set of sources
      *
      * @param array $sources Minify_Source instances
-     *
+     * 
      * @return string
      */
     public static function getDigest($sources)
@@ -170,9 +170,9 @@ class Minify_Source
      * Get content type from a group of sources
      *
      * This is called if the user doesn't pass in a 'contentType' options
-     *
+     * 
      * @param array $sources Minify_Source instances
-     *
+     * 
      * @return string content type. e.g. 'text/css'
      */
     public static function getContentType($sources)
