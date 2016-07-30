@@ -61,7 +61,7 @@ class Core
         }
 
         $pathInfo = pathinfo($_SERVER['PHP_SELF']);
-        self::$settings['board_url'] = (strtolower(substr($_SERVER["SERVER_PROTOCOL"], 0, 5)) == 'https://' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $pathInfo['dirname'] . "/";
+        self::$settings['board_url'] = (strtolower(substr($_SERVER["SERVER_PROTOCOL"], 0, 5)) == 'https://' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $pathInfo['dirname'];
 
         switch (self::$settings['db_type']) {
             case "mysqli":

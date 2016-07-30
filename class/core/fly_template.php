@@ -35,11 +35,13 @@ class Template
             $output = file_get_contents($filename);
             if (DEBUG) {
                 $temp_output = Core::DB()->secure($output);
-                Core::DB()->query('SELECT `uid` FROM `' . Core::$settings['db_prefix'] . 'set` WHERE `theme` = ' . self::$template_id . ' AND `group` = "' . $group . '" AND `name` = "' . $title . '"');
+                Core::DB()->query('SELECT `uid`, `value` FROM `' . Core::$settings['db_prefix'] . 'set` WHERE `theme` = ' . self::$template_id . ' AND `group` = "' . $group . '" AND `name` = "' . $title . '"');
                 if (!Core::DB()->num()) {
                     Core::DB()->query('INSERT INTO `' . Core::$settings['db_prefix'] . 'set` (theme, group, name, value) VALUES (' . self::$template_id . ', "' . $group . '", "' . $title . '", "' . $temp_output . '")');
                 } else {
-                    Core::DB()->update('`' . Core::$settings['db_prefix'] . 'set`', ["value" => $temp_output], '`theme` = ' . self::$template_id . ' AND `group` = "' . $group . '" AND `name` = "' . $title . '"');
+                    $fetch = Core::DB()->fetch();
+                    if ($fetch['value'] != $temp_output)
+                        Core::DB()->update('`' . Core::$settings['db_prefix'] . 'set`', ["value" => $temp_output, "edit_time" => time()], '`theme` = ' . self::$template_id . ' AND `group` = "' . $group . '" AND `name` = "' . $title . '"');
                 }
                 $output = "<!-- From file $group/$title, generated -->\n" . $output;
             }

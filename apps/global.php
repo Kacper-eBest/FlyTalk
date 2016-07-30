@@ -10,12 +10,17 @@ class class_global_global_page
 {
     public function doExecute(Core $Fly, $body, $head)
     {
-        // TODO Loading CSS from DB
-        // TODO automatic minify JS&CSS in one file per type
-
-        // Temp
-        $Fly->getClass('output')->addJS("public/js/jquery.min.js");
-        $Fly->getClass('output')->addJS("public/js/fly.js");
+        $css_dir = '/cache/skin_' . Member::getProperty("template") . '/style/';
+        if ($handle = opendir(CORE_ROOT_PATH . $css_dir)) {
+            while (false !== ($file = readdir($handle))) {
+                if ($file != "." && $file != "..") {
+                    $Fly->getClass('output')->addCSS($css_dir . $file);
+                }
+            }
+            closedir($handle);
+        }
+        $Fly->getClass('output')->addJS("/public/js/jquery.min.js");
+        $Fly->getClass('output')->addJS("/public/js/fly.js");
 
         $template = $Fly->getClass('template')->get("global", "global", ["title" => $Fly->getClass('output')->makeTitle(), "body" => $body, "head" => $head]);
         $Fly->getClass('smarty')->display("string: " . $template['output']);

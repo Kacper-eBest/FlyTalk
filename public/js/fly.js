@@ -90,7 +90,7 @@
                 var temp_url = "";
                 if (c_options.object != null) {
                     if (c_options.object.attr("ref") == "index")
-                        temp_url = fly["board_url"];
+                        temp_url = fly["board_url"] + "/";
 
                     if (c_options.object.attr("rel") == "popup")
                         return false;
@@ -235,7 +235,7 @@
         event.preventDefault();
     });
 
-    new Fly.Request(fly['board_url'] + "index.php?app=core&module=ajax_test", {
+    new Fly.Request(fly['board_url'] + "/index.php?app=core&module=ajax_test", {
         onSuccess: function (data) {
 
         }
