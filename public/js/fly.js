@@ -238,8 +238,9 @@
                 var actDate = Date.now() / 1000 | 0;
                 var prDate = new Date(time * 1000);
                 var output = "";
-                if (actDate - prDate.getTime() / 1000 < 86400) {
-                    var date = new Date(Math.abs(actDate - prDate.getTime() / 1000)).getTime();
+                var dry = actDate - prDate.getTime() / 1000;
+                if (dry < 86400) {
+                    var date = new Date(Math.abs(dry)).getTime();
                     if (date > (60 * 60)) {
                         output = Math.round(date / 60 / 60) + " " + Fly.Tools.dli(Math.round(date / 60 / 60), fly['lang_time']['hours'][0], fly['lang_time']['hours'][1], fly['lang_time']['hours'][2]) + " " + fly['lang_time']['ago'][0];
                     }
@@ -253,7 +254,7 @@
                         output = fly['lang_time']['moment'][0];
                     }
                 }
-                else if (actDate - prDate.getTime() / 1000 > 86400 && actDate - prDate.getTime() / 1000 < 2 * 86400) {
+                else if (dry > 86400 && dry < 2 * 86400) {
                     output = fly['lang_time']['yesterday'][0] + ", " + prDate.format(fly['lang_time']['yesterday'][1]);
                 } else {
                     output = prDate.format(fly['lang_time']['date_format'][0]);
