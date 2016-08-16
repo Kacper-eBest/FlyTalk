@@ -13,6 +13,8 @@ class class_global_global_page
         $css_dir = '/cache/skin_' . Member::getProperty("template") . '/style/';
         if ($handle = opendir(CORE_ROOT_PATH . $css_dir)) {
             while (false !== ($file = readdir($handle))) {
+                $ext = substr($file, strrpos($file, '.') + 1);
+                if ($ext != "css") continue;
                 if ($file != "." && $file != "..") {
                     $Fly->getClass('output')->addCSS($css_dir . $file);
                 }
