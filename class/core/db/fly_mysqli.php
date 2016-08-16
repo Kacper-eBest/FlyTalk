@@ -6,31 +6,8 @@
  * Date: 16.07.2016
  * Time: 13:11
  */
-class DB
+class DB extends DB_core
 {
-    static private $instance;
-    static private $last_result;
-    static private $connection;
-
-    static public $error;
-    static public $last_query;
-    static public $count;
-
-    static public function instance()
-    {
-        if (!self::$instance) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
-    static public function getDB()
-    {
-        if (!self::$instance)
-            return null;
-        return self::$instance;
-    }
-
     static public function setDB()
     {
         if (self::$connection)
@@ -133,7 +110,7 @@ class DB
         return mysqli_num_rows($result);
     }
 
-    static public function secure(string $data)
+    static public function secure(string $data) : string
     {
         if (!self::$connection) return false;
         return mysqli_escape_string(self::$connection, $data);

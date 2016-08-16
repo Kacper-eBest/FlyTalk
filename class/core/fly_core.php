@@ -65,6 +65,7 @@ class Core
         $pathInfo = pathinfo($_SERVER['PHP_SELF']);
         self::$settings['board_url'] = (strtolower(substr($_SERVER["SERVER_PROTOCOL"], 0, 5)) == 'https://' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $pathInfo['dirname'];
 
+        require(CORE_ROOT_PATH . 'class/core/db/fly_db_core.php');
         switch (self::$settings['db_type']) {
             case "mysqli":
                 require(CORE_ROOT_PATH . 'class/core/db/fly_mysqli.php');
